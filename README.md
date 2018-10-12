@@ -1,6 +1,6 @@
 # FollowMe
 
-FollowMe! is a simple social media web application built with React. FollowMe users can:
+FollowMe is a simple social network application built with React. FollowMe users can:
 
 1) Publish new content on their profiles.
 2) Make a following request to other users to see their content.
