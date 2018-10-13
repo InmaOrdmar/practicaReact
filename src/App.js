@@ -69,7 +69,7 @@ class AuthorList extends Component {
   }
 
   render() {
-    const profiles = this.state.authors.map(author => <RemoteMiniProfile author={author} />);
+    const profiles = this.state.authors.map(author => <RemoteMiniProfile author={author} key={author.login.uuid}/>);
     return (
       <div className="content">
         {profiles}
