@@ -24,16 +24,40 @@ const Header = () => {
   return(
     <header className="App-header">
       <div className="App-title">FollowMe!</div>
-      <div className="App-login">Login</div>
+      <LoginForm />
     </header>
   );
+}
+
+class LoginForm extends Component {
+
+  state = {
+    user: '',
+    password: ''
+  };
+  
+  handleChange = (field) => (event) => {
+    this.setState({
+      [field]: event.target.value
+    });
+  };
+
+  render() {
+    return(
+      <div className="App-login">
+      <span>Login:</span>
+      <span><input type="text" value={this.state.user} placeholder="user" size="15" onChange={this.handleChange('user')}/></span>
+      <span><input type="password" value={this.state.password} placeholder="password" size="15" onChange={this.handleChange('password')}/></span>
+      </div>
+    );
+  }
 }
 
 class AuthorList extends Component {
   getProfiles = (n) => {
     let profiles = [];
     for(let i = 1; i <= n; i++) {
-      profiles.push(<RemoteMiniProfile n={i.toString()} key={i}/>);
+      profiles.push(<RemoteMiniProfile n={i} key={i}/>);
     }
     return profiles;
   }
@@ -60,7 +84,7 @@ class RemoteMiniProfile extends Component {
     ...this.props,
     user: {
       name: 'name',
-      picture: '//placehold.it/100x100'
+      picture: '//placehold.it/80x80'
     }
   }
 
