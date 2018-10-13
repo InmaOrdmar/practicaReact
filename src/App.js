@@ -54,20 +54,28 @@ class LoginForm extends Component {
 }
 
 class AuthorList extends Component {
-  getProfiles = (n) => {
-    let profiles = [];
-    for(let i = 1; i <= n; i++) {
-      profiles.push(<RemoteMiniProfile n={i} key={i}/>);
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      authors: []
     }
-    return profiles;
+  }
+
+  componentWillMount() {
+    fetch('https://randomuser.me/api/?results=100&seed=abc')
+    .then(response => response.json())
+    .then(json => this.setState({ authors: json.results }));
   }
 
   render() {
+    const profiles = this.state.authors.map(author => <RemoteMiniProfile author={author} />);
     return (
       <div className="content">
-        {this.getProfiles(100)}
+        {profiles}
       </div>
-    )}
+    )
+  }
 }
 
 const MiniProfile = ({user}) => {
@@ -79,35 +87,12 @@ const MiniProfile = ({user}) => {
   );
 }
 
-class RemoteMiniProfile extends Component {
-  state = {
-    ...this.props,
-    user: {
-      name: 'name',
-      picture: '//placehold.it/80x80'
-    }
+const RemoteMiniProfile = ({author}) => {
+  const user = {
+    name: fullname(author),
+    picture: author.picture.medium
   }
-
-  componentDidMount() {
-    fetch(`https://randomuser.me/api/?page=${this.state.n}&results=1&seed=abc&inc=name,picture`)
-    .then(response => response.json())
-    .then(json => {
-      const result = json.results[0];
-      this.setState({
-        user: {
-          name: fullname(result),
-          picture: result.picture.medium
-        }
-      });
-    });
-  }
-  
-  render() {
-    const author = this.state.user;
-    return (
-      <MiniProfile user={author} />
-    );
-  }
+  return <MiniProfile user={user} />
 }
 
 export default App;
