@@ -1,20 +1,33 @@
 import React, { Component } from 'react';
-
+import { connect } from 'react-redux';
 import './App.css';
-import { fullname } from './utils';
+import Login from './components/login/Login';
+import AuthorsList from './components/authorsList/authorsList';
+import { FETCH_USERS } from './actionTypes';
+
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loggedIn: false
-    }
+      users: []
+    };
   }
+    componentWillMount() {
+      fetch('https://randomuser.me/api/?results=100&seed=abc')
+      .then(response => response.json())
+      .then(json => {
+        const users = json.results;
+        this.setState({ users });
+        this.props.saveUsers(users);
+      });
+    }
+
   render() {
     return (
       <div className="App">
         <Header />
-        <AuthorList />
+        <AuthorsList />
       </div>
     );
   }
@@ -24,75 +37,23 @@ const Header = () => {
   return(
     <header className="App-header">
       <div className="App-title">FollowMe!</div>
-      <LoginForm />
+      <Login />
     </header>
   );
 }
 
-class LoginForm extends Component {
 
-  state = {
-    user: '',
-    password: ''
-  };
-  
-  handleChange = (field) => (event) => {
-    this.setState({
-      [field]: event.target.value
-    });
-  };
 
-  render() {
-    return(
-      <div className="App-login">
-      <span>Login:</span>
-      <span><input type="text" value={this.state.user} placeholder="user" size="15" onChange={this.handleChange('user')}/></span>
-      <span><input type="password" value={this.state.password} placeholder="password" size="15" onChange={this.handleChange('password')}/></span>
-      </div>
-    );
-  }
+
+const saveUsersAction = (users) => {
+  return ({
+    type: FETCH_USERS,
+    payload: users
+  });
 }
 
-class AuthorList extends Component {
+const mapDispatchToProps = dispatch => ({
+  saveUsers: (users) => dispatch(saveUsersAction(users))
+});
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      authors: []
-    }
-  }
-
-  componentWillMount() {
-    fetch('https://randomuser.me/api/?results=100&seed=abc')
-    .then(response => response.json())
-    .then(json => this.setState({ authors: json.results }));
-  }
-
-  render() {
-    const profiles = this.state.authors.map(author => <RemoteMiniProfile author={author} key={author.login.uuid}/>);
-    return (
-      <div className="content">
-        {profiles}
-      </div>
-    )
-  }
-}
-
-const MiniProfile = ({user}) => {
-  return (
-    <div className="profile">
-      <img className="avatar" src={user.picture} alt={user.name}/>
-      <div className="name">{user.name}</div>
-    </div>
-  );
-}
-
-const RemoteMiniProfile = ({author}) => {
-  const user = {
-    name: fullname(author),
-    picture: author.picture.medium
-  }
-  return <MiniProfile user={user} />
-}
-
-export default App;
+export default connect(null, mapDispatchToProps)(App);
