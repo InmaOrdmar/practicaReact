@@ -2,7 +2,6 @@ import { LOGIN, LOGOUT, LOGIN_ERROR } from '../../actionTypes';
 
 
 const initialState = {
-    loggedIn: false,
     activeUser: '',
     loginError: false
 }
@@ -20,7 +19,7 @@ const loginReducer = (state = initialState, action) => {
         case LOGIN_ERROR:
             return {
                 ...state,
-                loginError: true
+                loginError: action.payload
             }
         default:
             return state;
