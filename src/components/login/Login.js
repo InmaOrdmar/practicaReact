@@ -37,20 +37,22 @@ class Login extends Component {
   }
 }
 
+const findUser = (user, password) => loginApi(this.props.users)(user, password);
 
-const logIn = (user, password) => async dispatch => {
-  try {
-    const activeUser = await loginApi(user, password);
-    dispatch({type: LOGIN, payload: activeUser});
+const logIn = (user, password) => dispatch => {
+  const activeUser = findUser(user, password);
+  if (activeUser) {
     localStorage.setItem('activeUser', activeUser);
-  } catch (error) {
-    dispatch({type: LOGIN_ERROR, payload: error});
+    dispatch({type: LOGIN, payload: activeUser});
+  } else {
+    dispatch({type: LOGIN_ERROR});
   }
 }
 
 const mapStateToProps = state => ({
   activeUser: state.loginData.user,
   loginError: state.loginData.loginError,
+  users: state.users
 });
 
 const mapDispatchToProps = dispatch => ({

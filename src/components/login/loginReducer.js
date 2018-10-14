@@ -19,7 +19,7 @@ const loginReducer = (state = initialState, action) => {
         case LOGIN_ERROR:
             return {
                 ...state,
-                loginError: action.payload
+                loginError: true
             }
         default:
             return state;
