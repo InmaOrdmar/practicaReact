@@ -7,27 +7,16 @@ import { FETCH_USERS } from './actionTypes';
 
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      users: []
-    };
+  
+  componentDidMount() {
+    this.props.saveUsers();
   }
-    componentWillMount() {
-      fetch('https://randomuser.me/api/?results=100&seed=abc')
-      .then(response => response.json())
-      .then(json => {
-        const users = json.results;
-        this.setState({ users });
-        this.props.saveUsers(users);
-      });
-    }
 
   render() {
     return (
       <div className="App">
         <Header />
-        <AuthorsList />
+        <AuthorsList authors={this.props.users}/>
       </div>
     );
   }
@@ -42,18 +31,25 @@ const Header = () => {
   );
 }
 
-
-
-
-const saveUsersAction = (users) => {
-  return ({
-    type: FETCH_USERS,
-    payload: users
-  });
-}
-
-const mapDispatchToProps = dispatch => ({
-  saveUsers: (users) => dispatch(saveUsersAction(users))
+const mapStateToProps = state => ({
+  users: state.users
 });
 
-export default connect(null, mapDispatchToProps)(App);
+const fetchUsers = () => {
+  return dispatch => {
+    fetch('https://randomuser.me/api/?results=100&seed=abc')
+    .then(response => response.json())
+    .then(json => {
+      const users = json.results;
+      dispatch ({
+        type: FETCH_USERS,
+        payload: users
+      });
+    });
+  }
+}
+const mapDispatchToProps = dispatch => ({
+  saveUsers: () => dispatch(fetchUsers())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
