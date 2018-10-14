@@ -1,57 +1,57 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { LOGIN, LOGIN_ERROR } from '../../actionTypes';
 
 
-const LoginView = ({user, password, loggedIn, activeUser, loginError, handleChange, handleSubmit}) => {
-  return(
-    <div>
-      <form className="App-login" onSubmit={handleSubmit(user, password)}>
-        <span><input type="text" value={user} placeholder="user" name="user" size="15" onChange={handleChange}/></span>
-        <span><input type="password" value={password} placeholder="password" name="password" size="15" onChange={handleChange}/></span>
-        <span><button type="submit">Login</button></span>
-      </form>
-      <div>
-        Logged in: {loggedIn}. Active user: {activeUser}. Login error: {loginError}.
-      </div>
-    </div>
-  );
-}
+class Login extends Component {
 
-const changeActionCreator = (event) => {
-  return({
+  render() {
+    return (
+      <div>
+        <form className="App-login" onSubmit={this.props.handleSubmit}>
+          <span><input type="text" value={this.props.user} placeholder="user" name="user" size="15" onChange={this.props.handleChange}/></span>
+          <span><input type="password" value={this.props.password} placeholder="password" name="password" size="15" onChange={this.props.handleChange}/></span>
+          <span><button type="submit">Login</button></span>
+        </form>
+      </div>
+    
+    );
+  }
+}
+const changeActionCreator = dispatch => (event) => {
+  dispatch({
     type: `CHANGE_${event.target.name.toUpperCase()}`, 
     payload: event.target.value
   });
 }
 
-const loginActionCreator = (event) => (user, password) => {
-  event.preventDefault();
-    fetch('https://randomuser.me/api/?results=100&seed=abc')
-    .then(response => response.json())
-    .then(json => {
-      const match = json.results.find(profile => profile.login.username === user && profile.login.password === password);
-      if(match) {
-        return {type: LOGIN, payload: match.login.username};
-      } else {
-        return {type: LOGIN_ERROR};
-      }  
-    });
+const findMatch = (users, user, password) => {
+  const match = users.find(profile => profile.login.username === user && profile.login.password === password);
+  if(match) {
+    return {type: LOGIN, payload: match.login.username};
+  } else {
+    return {type: LOGIN_ERROR};
+  }  
+};
+
+const loginActionCreator = (event) => (users, user, password) => {
+  return dispatch => {
+    event.preventDefault();
+    dispatch(findMatch(users, user, password));
+  }
 }
 
 const mapStateToProps = state => ({
-  loggedIn: state.loginData.loggedIn,
   activeUser: state.loginData.user,
   loginError: state.loginData.loginError,
   user: state.loginForm.user,
-  password: state.loginForm.password
+  password: state.loginForm.password,
+  users: state.users
 });
 
-const mapDispatchToProps = dispatch => ({
-  handleChange: () => dispatch(changeActionCreator()),
-  handleSubmit: () => (user, password) => dispatch(loginActionCreator(user, password))
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  handleChange: (event) => dispatch(changeActionCreator(event)),
+  handleSubmit: (event) => dispatch(loginActionCreator(event)(ownProps.users, ownProps.user, ownProps.password))
 });
 
-const Login = connect(mapStateToProps, mapDispatchToProps)(LoginView);
-
-export default Login;
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
