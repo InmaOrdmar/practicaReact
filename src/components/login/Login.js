@@ -37,18 +37,17 @@ class Login extends Component {
   }
 }
 
-const logIn = (user, password) => async dispatch => {
+const logIn = async (user, password) => {
+  console.log(user, password, 'from logIn before trying match');
   try {
-    const userData = await loginApi(user, password);
-    if (userData) {
-      const activeUser = userData.login.username;
-      localStorage.setItem('activeUser', activeUser);
-      dispatch({type: LOGIN, payload: activeUser});
-    } else {
-      dispatch({type: LOGIN_ERROR});
-    }
+    const match = await loginApi(user, password); // aquí está el error pero no consigo averiguar qué falla, siempre manda al catch
+    const activeUser = match.login.username;
+    console.log(activeUser, 'from logIn after successful match');
+    localStorage.setItem('activeUser', activeUser);
+    return {type: LOGIN, payload: activeUser};
   } catch {
-    dispatch({type: LOGIN_ERROR});
+    console.log('User not found');
+    return {type: LOGIN_ERROR};
   }
 }
 
@@ -59,7 +58,10 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  handleLogIn: (user, password) => dispatch(logIn(user, password))
+  handleLogIn: async (user, password) => {
+    const loginAction = await logIn(user, password);
+    dispatch(loginAction);
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

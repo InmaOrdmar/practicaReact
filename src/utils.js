@@ -11,6 +11,8 @@ export const loginApi = async (user, password) => {
     await fetch('https://randomuser.me/api/?results=100&seed=abc')
     .then(response => response.json())
     .then(json => {
-      return json.results.find(profile => profile.login.username === user && profile.login.password === password);
+      const match = json.results.find(profile => profile.login.username === user && profile.login.password === password);
+      console.log(match, 'from loginApi');
+      return match;
     });
 }
