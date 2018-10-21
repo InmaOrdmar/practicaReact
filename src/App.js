@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './App.css';
+import Welcome from './components/welcome/Welcome';
 import Login from './components/login/Login';
 import AuthorsList from './components/authorsList/authorsList';
 import { API } from './utils';
@@ -8,7 +9,7 @@ import { FETCH_USERS } from './actionTypes';
 
 
 class App extends Component {
-  
+
   componentDidMount() {
     this.props.saveUsers();
   }
@@ -16,20 +17,28 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Header />
+        <Header loggedIn={this.props.loggedIn} />
         <AuthorsList authors={this.props.users}/>
       </div>
     );
   }
 }
 
-const Header = () => {
+const Header = ({loggedIn, users}) => {
   return(
     <header className="App-header">
       <div className="App-title">FollowMe!</div>
-      <Login />
+      <Greeting loggedIn={loggedIn} />
     </header>
   );
+}
+
+const Greeting = ({loggedIn, users}) => {
+  if (loggedIn) {
+    return <Welcome />
+  } else {
+    return <Login />
+  }
 }
 
 const fetchUsers = () => {
@@ -50,7 +59,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-  users: state.users
+  users: state.users,
+  loggedIn: state.loginData.loggedIn
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

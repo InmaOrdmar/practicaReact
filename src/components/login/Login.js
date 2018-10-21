@@ -32,7 +32,7 @@ class Login extends Component {
 
   render() {
     return (
-      <form className="App-login" onSubmit={this.handleSubmit}>
+      <form className="App-greeting" onSubmit={this.handleSubmit}>
         <span><input type="text" value={this.state.user} placeholder="user" name="user" size="15" onChange={this.handleChange}/></span>
         <span><input type="password" value={this.state.password} placeholder="password" name="password" size="15" onChange={this.handleChange}/></span>
         <span><button type="submit">Login</button></span>

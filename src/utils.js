@@ -13,3 +13,7 @@ export const loginApi = async (user, password) => {
     return await API()
     .then(json => json.results.find(profile => profile.login.username === user && profile.login.password === password));
 }
+
+export const findUser = (users, username) => {
+    return users.find(user => user.login.username === username);
+}

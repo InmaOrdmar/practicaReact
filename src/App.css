@@ -19,14 +19,14 @@
   font-weight: bold; 
 }
 
-.App-login {
+.App-greeting {
   flex: 1 1 auto;
   font-size: .5rem;
   font-weight: bold;
   margin: .5rem .2rem;
 }
 
-.App-login span {
+.App-greeting span {
   margin: 0 .2rem;
 }
 
