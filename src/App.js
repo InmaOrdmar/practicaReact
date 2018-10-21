@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import './App.css';
 import Login from './components/login/Login';
 import AuthorsList from './components/authorsList/authorsList';
+import { API } from './utils';
 import { FETCH_USERS } from './actionTypes';
 
 
@@ -31,14 +32,9 @@ const Header = () => {
   );
 }
 
-const mapStateToProps = state => ({
-  users: state.users
-});
-
 const fetchUsers = () => {
   return dispatch => {
-    fetch('https://randomuser.me/api/?results=100&seed=abc')
-    .then(response => response.json())
+    API()
     .then(json => {
       const users = json.results;
       dispatch ({
@@ -48,8 +44,13 @@ const fetchUsers = () => {
     });
   }
 }
+
 const mapDispatchToProps = dispatch => ({
   saveUsers: () => dispatch(fetchUsers())
+});
+
+const mapStateToProps = state => ({
+  users: state.users
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

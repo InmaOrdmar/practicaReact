@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { LOGIN, LOGIN_ERROR } from '../../actionTypes';
+import { LOGIN, LOGIN_ERROR, KEEP_SESSION } from '../../actionTypes';
 import { loginApi } from '../../utils';
 
 
@@ -9,6 +9,10 @@ class Login extends Component {
   state = {
     user: '',
     password: ''
+  }
+
+  componentDidMount() {
+    this.props.keepSession();
   }
 
   handleChange = (event) => {
@@ -20,34 +24,40 @@ class Login extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
     this.props.handleLogIn(this.state.user, this.state.password);
+    this.setState({
+      user: '',
+      password: ''
+    });
   }
 
   render() {
     return (
-      <div>
-        <form className="App-login" onSubmit={this.handleSubmit}>
-          <span><input type="text" value={this.state.user} placeholder="user" name="user" size="15" onChange={this.handleChange}/></span>
-          <span><input type="password" value={this.state.password} placeholder="password" name="password" size="15" onChange={this.handleChange}/></span>
-          <span><button type="submit">Login</button></span>
-        </form>
-        <div>{(this.props.activeUser) && 'Logged in!'}</div>
-      </div>
-    
+      <form className="App-login" onSubmit={this.handleSubmit}>
+        <span><input type="text" value={this.state.user} placeholder="user" name="user" size="15" onChange={this.handleChange}/></span>
+        <span><input type="password" value={this.state.password} placeholder="password" name="password" size="15" onChange={this.handleChange}/></span>
+        <span><button type="submit">Login</button></span>
+      </form>
     );
   }
 }
 
 const logIn = async (user, password) => {
-  console.log(user, password, 'from logIn before trying match');
   try {
-    const match = await loginApi(user, password); // aquí está el error pero no consigo averiguar qué falla, siempre manda al catch
+    const match = await loginApi(user, password);
     const activeUser = match.login.username;
-    console.log(activeUser, 'from logIn after successful match');
     localStorage.setItem('activeUser', activeUser);
+    console.log(`Log in success. Active user: ${activeUser}`);
     return {type: LOGIN, payload: activeUser};
   } catch {
     console.log('User not found');
     return {type: LOGIN_ERROR};
+  }
+}
+
+const checkSession = () => {
+  const activeUser = localStorage.getItem('activeUser');
+  if (activeUser) {
+    return {type: KEEP_SESSION, payload: activeUser}
   }
 }
 
@@ -61,7 +71,8 @@ const mapDispatchToProps = dispatch => ({
   handleLogIn: async (user, password) => {
     const loginAction = await logIn(user, password);
     dispatch(loginAction);
-  }
+  },
+  keepSession: () => dispatch(checkSession())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
