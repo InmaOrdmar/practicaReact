@@ -57,7 +57,9 @@ const logIn = async (user, password) => {
 const checkSession = () => {
   const activeUser = localStorage.getItem('activeUser');
   if (activeUser) {
-    return {type: KEEP_SESSION, payload: activeUser}
+    return {type: KEEP_SESSION, payload: activeUser}; 
+  } else {
+    return {type: 'default'};
   }
 }
 
